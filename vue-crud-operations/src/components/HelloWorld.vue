@@ -2,19 +2,12 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
-      <div>
-            <input v-on:keyup.13="addFriend()"/>
-    <button v-on:click="addFriend()">save</button>
-  <li v-for="friend, i in friends">
-  <div v-if="editFriend === friend.id">
-    <input v-on:keyup.13="updateFriend(friend)" v-model="friend.name" />
-    <button v-on:click="updateFriend(friend)">save</button>
-  </div>
-  <div v-else>
-    <button v-on:click="editFriend = friend.id">edit</button>
-    <button v-on:click="deleteFriend(friend.id, i)">x</button>
-    {{friend.name}}
-  </div>
+    <div>
+      <input v-on:keyup.13="addFriend()" v-model="name"/>
+      <button v-on:click="addFriend()">save</button>
+      <li :key="i" v-for="(friend, i) in friends">
+      {{friend.name}}
+      <button v-on:click="deleteFriend(i)">x</button>
 </li>
   </div>
   </div>
@@ -23,53 +16,23 @@
 <script>
 export default {
   name: 'HelloWorld',
-  data () {
+  data: function() {
     return {
       msg: 'Welcome to Your Vue.js App',
       editFriend: null,
+      name: "",
       friends: [],
     }
   },
   methods: {
     addFriend(){
-      fetch("http://rest.learncode.academy/api/vue-crud/friends/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then(() => {
-          //something after the friend is created
-      })
+      this.friends.push({name:this.name});
+      this.name="";
     },
-    deleteFriend(id, i) {
-      fetch("http://rest.learncode.academy/api/vue-crud/friends/" + id, {
-        method: "DELETE"
-      })
-      .then(() => {
+    deleteFriend(i) {
         this.friends.splice(i, 1);
-      })
-    },
-    updateFriend(friend) {
-      fetch("http://rest.learncode.academy/api/vue-crud/friends/" + friend.id, {
-        body: JSON.stringify(friend),
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then(() => {
-        this.editFriend = null;
-      })
-    },
-  },
-  mounted(){
-    fetch("http://rest.learncode.academy/api/vue-crud/friends")
-      .then(response => response.json())
-      .then((data) => {
-        this.friends = data;
-      })
-  },
+    }
+  }
 }
 </script>
 
