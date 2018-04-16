@@ -2,84 +2,21 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
+      <div>
+            <input v-on:keyup.13="addFriend()"/>
+    <button v-on:click="addFriend()">save</button>
+  <li v-for="friend, i in friends">
+  <div v-if="editFriend === friend.id">
+    <input v-on:keyup.13="updateFriend(friend)" v-model="friend.name" />
+    <button v-on:click="updateFriend(friend)">save</button>
+  </div>
+  <div v-else>
+    <button v-on:click="editFriend = friend.id">edit</button>
+    <button v-on:click="deleteFriend(friend.id, i)">x</button>
+    {{friend.name}}
+  </div>
+</li>
+  </div>
   </div>
 </template>
 
@@ -88,9 +25,51 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      editFriend: null,
+      friends: [],
     }
-  }
+  },
+  methods: {
+    addFriend(){
+      fetch("http://rest.learncode.academy/api/vue-crud/friends/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(() => {
+          //something after the friend is created
+      })
+    },
+    deleteFriend(id, i) {
+      fetch("http://rest.learncode.academy/api/vue-crud/friends/" + id, {
+        method: "DELETE"
+      })
+      .then(() => {
+        this.friends.splice(i, 1);
+      })
+    },
+    updateFriend(friend) {
+      fetch("http://rest.learncode.academy/api/vue-crud/friends/" + friend.id, {
+        body: JSON.stringify(friend),
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(() => {
+        this.editFriend = null;
+      })
+    },
+  },
+  mounted(){
+    fetch("http://rest.learncode.academy/api/vue-crud/friends")
+      .then(response => response.json())
+      .then((data) => {
+        this.friends = data;
+      })
+  },
 }
 </script>
 
