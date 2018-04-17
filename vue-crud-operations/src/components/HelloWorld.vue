@@ -2,6 +2,7 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
+    <NewComponent :message="msg"></NewComponent>
     <div>
       <input v-on:keyup.13="addFriend()" v-model="name"/>
       <button v-on:click="addFriend()">save</button>
@@ -16,10 +17,10 @@
 <script>
 export default {
   name: 'HelloWorld',
-  data: function() {
+  props: ["msg"],
+  data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
-      editFriend: null,
+      msg2: 'Welcome to Your Vue.js App',
       name: "",
       friends: [],
     }
